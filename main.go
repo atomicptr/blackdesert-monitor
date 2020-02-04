@@ -5,14 +5,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/pkg/errors"
 
 	"github.com/atomicptr/blackdesert-monitor/monitor"
 )
-
-const BlackDesertProcessName64bit = "BlackDesert64.exe"
 
 func main() {
 	err := run()
@@ -25,6 +22,12 @@ func run() error {
 	// logger
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 
+	filePath := "./settings.yaml"
+	config, err := monitor.ConfigFromFile(filePath)
+	if err != nil {
+		return errors.Wrapf(err, "could not open file \"%s\"", filePath)
+	}
+
 	// channel to listen for errors coming from the app
 	appErrors := make(chan error, 1)
 
@@ -36,13 +39,13 @@ func run() error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
-	pm := monitor.New(
-		monitor.Config{
-			ProcessName:  BlackDesertProcessName64bit,
-			PollInterval: 15 * time.Second,
-		},
+	pm, err := monitor.New(
+		config,
 		logger,
 	)
+	if err != nil {
+		return err
+	}
 
 	go func() {
 		appErrors <- pm.Start()

@@ -1,0 +1,7 @@
+processName: BlackDesert64.exe
+pollInterval: 15s
+telegram:
+  # Your Telegram Token, read README on how to obtain one
+  token:
+  # Your Telegram User ID, if you have the bot setup you can get it with "/myid"
+  userId:
