@@ -2,9 +2,14 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/atomicptr/blackdesert-monitor/system"
+	"github.com/pkg/errors"
+
+	"github.com/atomicptr/blackdesert-monitor/monitor"
 )
 
 const BlackDesertProcessName64bit = "BlackDesert64.exe"
@@ -17,16 +22,39 @@ func main() {
 }
 
 func run() error {
-	for {
-		processId, err := system.FindProcessByName(BlackDesertProcessName64bit)
-		if err != nil {
-			return err
-		}
+	// logger
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 
-		conns, _ := system.GetConnectionsWithPid(processId)
+	// channel to listen for errors coming from the app
+	appErrors := make(chan error, 1)
 
-		log.Printf("BDO PID: %d, Connections: %d, RUNNING? %v\n", processId, len(conns), len(conns) > 0)
+	// app starting
+	logger.Printf("main: blackdesert-monitor starting...")
+	defer logger.Printf("main: Done")
 
-		time.Sleep(30 * time.Second)
+	// channel to listen for interrupt or terminate signal from OS
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+	pm := monitor.New(
+		monitor.Config{
+			ProcessName:  BlackDesertProcessName64bit,
+			PollInterval: 15 * time.Second,
+		},
+		logger,
+	)
+
+	go func() {
+		appErrors <- pm.Start()
+	}()
+
+	select {
+	case err := <-appErrors:
+		return errors.Wrap(err, "app error")
+	case sig := <-shutdown:
+		logger.Printf("main: %v shutdown...", sig)
+		pm.Stop()
 	}
+
+	return nil
 }
