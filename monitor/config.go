@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
@@ -33,4 +34,16 @@ func configFromBytes(data []byte) (*Config, error) {
 		return nil, err
 	}
 	return &config, nil
+}
+
+func (config *Config) Validate() error {
+	if config.ProcessName == "" {
+		return errors.New("Process name can't be empty!")
+	}
+
+	if config.Telegram.Token == "" {
+		return errors.New("Telegram Bot Token can't be empty!")
+	}
+
+	return nil
 }

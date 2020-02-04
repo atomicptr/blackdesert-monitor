@@ -1,6 +1,10 @@
+# The name of the BDO executable
 processName: BlackDesert64.exe
+# Time between every "is BDO running?" attempt
 pollInterval: 30s
+# Times to check before informing the user
 unavailabilityThreshold: 5
+# Close the game when it becomes unavailable
 closeBlackDesertWhenUnavailable: true
 telegram:
   # Your Telegram Token, read README on how to obtain one

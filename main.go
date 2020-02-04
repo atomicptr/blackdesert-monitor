@@ -22,10 +22,26 @@ func run() error {
 	// logger
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 
+	// config
 	filePath := "./settings.yaml"
+
+	// arguments found, try to use that as a path
+	if len(os.Args) > 1 {
+		logger.Printf("Arguments found: %v\n", os.Args[1:])
+		filePath = os.Args[1]
+	}
+
 	config, err := monitor.ConfigFromFile(filePath)
 	if err != nil {
 		return errors.Wrapf(err, "could not open file \"%s\"", filePath)
+	}
+
+	if err := config.Validate(); err != nil {
+		return err
+	}
+
+	if config.Telegram.UserId == 0 {
+		logger.Println("Your Telegram User ID is empty! You can get it by sending /myid to the bot!")
 	}
 
 	// channel to listen for errors coming from the app
