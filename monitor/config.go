@@ -8,9 +8,11 @@ import (
 )
 
 type Config struct {
-	ProcessName  string        `yaml:"processName"`
-	PollInterval time.Duration `yaml:"pollInterval"`
-	Telegram     struct {
+	ProcessName                     string        `yaml:"processName"`
+	PollInterval                    time.Duration `yaml:"pollInterval"`
+	UnavailabilityThreshold         int           `yaml:"unavailabilityThreshold"`
+	CloseBlackDesertWhenUnavailable bool          `yaml:"closeBlackDesertWhenUnavailable"`
+	Telegram                        struct {
 		Token  string `yaml:"token"`
 		UserId int    `yaml:"userId"`
 	}

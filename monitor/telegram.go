@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"fmt"
+	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 
@@ -18,6 +19,20 @@ func (pm *ProcessMonitor) registerBotHandlers() {
 
 	pm.bot.Handle("/status", pm.wrapAuthorizedHandler(pm.botHandlerStatus))
 	pm.bot.Handle("/quit", pm.wrapAuthorizedHandler(pm.botHandlerQuit))
+}
+
+func (pm *ProcessMonitor) sendMessageToUser(message string) error {
+	user, err := pm.bot.ChatByID(strconv.Itoa(pm.config.Telegram.UserId))
+	if err != nil {
+		return err
+	}
+
+	_, err = pm.bot.Send(user, message)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (pm *ProcessMonitor) wrapAuthorizedHandler(handlerFunc func(*tb.Message)) func(*tb.Message) {

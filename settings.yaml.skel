@@ -1,5 +1,7 @@
 processName: BlackDesert64.exe
-pollInterval: 15s
+pollInterval: 30s
+unavailabilityThreshold: 5
+closeBlackDesertWhenUnavailable: true
 telegram:
   # Your Telegram Token, read README on how to obtain one
   token:
