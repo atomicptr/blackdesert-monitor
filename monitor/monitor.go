@@ -19,6 +19,7 @@ type ProcessMonitor struct {
 	tickerChan                chan bool
 	appErrors                 chan error
 	lastKnownProcessId        int
+	bdoWasRunningOnce         bool
 	unavailabilityCounter     int
 	unavailabilityMessageSent bool
 }
@@ -38,6 +39,7 @@ func New(config *Config, logger *log.Logger) (*ProcessMonitor, error) {
 		logger:                    logger,
 		ticker:                    time.NewTicker(config.PollInterval),
 		appErrors:                 make(chan error, 1),
+		bdoWasRunningOnce:         false,
 		unavailabilityCounter:     0,
 		unavailabilityMessageSent: false,
 	}
@@ -67,6 +69,11 @@ func (pm *ProcessMonitor) tick() {
 	err := pm.Status()
 	if err != nil {
 		pm.logger.Println(err)
+
+		// make sure to not send the user a message until he started BDO at least once...
+		if !pm.bdoWasRunningOnce {
+			return
+		}
 
 		if !pm.unavailabilityMessageSent {
 			pm.unavailabilityCounter++
@@ -102,6 +109,7 @@ func (pm *ProcessMonitor) tick() {
 	}
 
 	// reset unavailability stuff
+	pm.bdoWasRunningOnce = true
 	pm.unavailabilityCounter = 0
 	pm.unavailabilityMessageSent = false
 
