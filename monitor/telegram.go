@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	tb "gopkg.in/tucnak/telebot.v2"
+
+	"github.com/atomicptr/blackdesert-monitor/system"
 )
 
 func (pm *ProcessMonitor) registerBotHandlers() {
@@ -15,6 +17,7 @@ func (pm *ProcessMonitor) registerBotHandlers() {
 	})
 
 	pm.bot.Handle("/status", pm.wrapAuthorizedHandler(pm.botHandlerStatus))
+	pm.bot.Handle("/quit", pm.wrapAuthorizedHandler(pm.botHandlerQuit))
 }
 
 func (pm *ProcessMonitor) wrapAuthorizedHandler(handlerFunc func(*tb.Message)) func(*tb.Message) {
@@ -43,6 +46,24 @@ func (pm *ProcessMonitor) botHandlerStatus(message *tb.Message) {
 	}
 
 	_, err = pm.bot.Send(message.Sender, "Everything is fine!")
+	if err != nil {
+		pm.logger.Println(err)
+	}
+}
+
+func (pm *ProcessMonitor) botHandlerQuit(message *tb.Message) {
+	pm.logger.Printf("/quit received, will kill process %d\n", pm.lastKnownProcessId)
+	err := system.Kill(pm.lastKnownProcessId)
+	if err != nil {
+		pm.logger.Println(err)
+		_, err := pm.bot.Send(message.Sender, fmt.Sprintf("Could not kill process: %s", err))
+		if err != nil {
+			pm.logger.Println(err)
+		}
+		return
+	}
+
+	_, err = pm.bot.Send(message.Sender, "Successfully quit Black Desert")
 	if err != nil {
 		pm.logger.Println(err)
 	}
