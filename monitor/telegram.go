@@ -53,7 +53,7 @@ func (pm *ProcessMonitor) wrapAuthorizedHandler(handlerFunc func(*tb.Message)) f
 func (pm *ProcessMonitor) botHandlerStatus(message *tb.Message) {
 	err := pm.Status()
 	if err != nil {
-		_, err := pm.bot.Send(message.Sender, err)
+		_, err := pm.bot.Send(message.Sender, fmt.Sprintf("Black Desert is not running properly.\n\nReason:\n%s", err))
 		if err != nil {
 			pm.logger.Println(err)
 		}

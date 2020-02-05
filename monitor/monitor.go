@@ -84,7 +84,7 @@ func (pm *ProcessMonitor) tick() {
 			// inform user that the Black Desert connection has been cut
 			pm.logger.Println("Unavailability threshold reached, will inform user...")
 			err := pm.sendMessageToUser(
-				fmt.Sprintf("Connection to Black Desert Online has been lost, Reason: %s", err),
+				fmt.Sprintf("Connection to Black Desert Online has been lost.\n\nReason:\n%s", err),
 			)
 			if err != nil {
 				pm.logger.Println(err)
