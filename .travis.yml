@@ -1,10 +1,14 @@
 language: go
 go:
   - "1.13"
+env:
+  global:
+    - GOOS=windows
 before_script:
+  - export GOOS=windows
   - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.22.2
 script:
-  - ./scripts/build_release.sh
+  - make
   - $(go env GOPATH)/bin/golangci-lint run
 deploy:
   provider: releases
