@@ -1,6 +1,6 @@
 language: go
 go:
-  - "1.13"
+  - '1.13'
 env:
   global:
     - GOOS=windows
@@ -9,13 +9,12 @@ before_script:
   - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.22.2
 script:
   - make
-  - $(go env GOPATH)/bin/golangci-lint run
+  - "$(go env GOPATH)/bin/golangci-lint run"
 deploy:
   provider: releases
   skip_cleanup: true
-  api_key: $GH_TOKEN
-  file_glob: true
-  file:
-    - "build/blackdesert-monitor.zip"
+  api_key:
+    secure: FTwFomUGYMHpoJQdYkefBfYRiMe4UCnzX4vxI3kmIF4Q5JNxZWB9gGVXnmwk/vtFSAU3RNWUVFqfWwEZCng5XwOqkmG5U9IftEiEXcZX5NqE5wdx3D+9WLTB+x/7/XiQrOn8yNFnEKJYDNqjc0wOeg9P1umJnMtjar26FI3eTp/t67If6z931S+U29TuA3+uJ5N5IJf+aekK0o54flna6xHOPkHzrmpXe2+YaadGfMqbkusr3KYVjLreHah73ZksojX1A8nCO7+CrzIl7ZSGQDI3/JUXZac3cssbSXw31KS2Z/f9OitquYLAuqIU5wmnwQZseb+18slLi58HjF8QzuVOAIUKNow2Wjk0PTn/SrfMv87I3xvPZyGrLEONjmAxgZiMxwx4gaqYMdAX6sglgdAEQ8pohUWh/BigzxDM4L4Nj1bY3bh5vS6DgHfYJjsyTZV3uaCqFBgHPjHe2v8ddd/ivkM6dpfSqQvbd3oNaAMFbqyb1jxQAqoKO0sIqyLN+b9H9yIFeuicoyhzsyWnk2uldAgVFUKVkuK2UUJumTlLGw/cG5rWfXfH1ml5avaWCe/CRN8Hs/+efjnDmyGdHAA1/TQo5w5T5iY6vj5mWcpLjjQ/4subpHZ6+BTdIY8dE3nLNhM6j+UPUqGXgLRcR6FFeGJVkA8JNZwU0aukknI=
+  file: "blackdesert-monitor.zip"
   on:
     tags: true
