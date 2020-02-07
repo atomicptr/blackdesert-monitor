@@ -1,0 +1,17 @@
+language: go
+go:
+  - "1.13"
+before_script:
+  - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.22.2
+script:
+  - ./scripts/build_release.sh
+  - $(go env GOPATH)/bin/golangci-lint run
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GH_TOKEN
+  file_glob: true
+  file:
+    - "build/blackdesert-monitor.zip"
+  on:
+    tags: true
