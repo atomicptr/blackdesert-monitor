@@ -82,4 +82,7 @@ func (pm *ProcessMonitor) botHandlerQuit(message *tb.Message) {
 	if err != nil {
 		pm.logger.Println(err)
 	}
+
+	// suppress the "game connection has been lost" message
+	pm.bdoWasRunningOnce = false
 }
